@@ -1,7 +1,14 @@
 import React from 'react'
-import { Nav, NavItem, NavLink } from "reactstrap";
-import { Link } from "react-router-dom"
+import { Nav, NavItem, NavLink, Button } from "reactstrap";
+import { Link } from "react-router-dom";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../config"
+import { signOut } from "firebase/auth"
+import { nameCapitalize } from "../nameSplitter"
 function Navbar() {
+    const [user] = useAuthState(auth)
+    console.log(user, ">>?>?")
+
     return (
         <div>
             <Nav pills>
@@ -27,13 +34,19 @@ function Navbar() {
                         Another Link
                     </NavLink>
                 </NavItem>
-                <NavItem>
-                    <NavLink
-                        disabled
-                        href="#"
-                    >
-                        Disabled Link
-                    </NavLink>
+                <NavItem className='mt-1'>
+                    {
+                        user &&
+                        <>
+                            <span className='me-5 h6'>
+
+                                Welcome {nameCapitalize(user.displayName)}
+                            </span>
+                            <Button color="primary" onClick={() => signOut(auth)}>
+                                Log out
+                            </Button>
+                        </>
+                    }
                 </NavItem>
             </Nav>
         </div>

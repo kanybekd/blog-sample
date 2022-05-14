@@ -3,11 +3,14 @@ import { collection, onSnapshot, orderBy, query } from "firebase/firestore"
 import { Link } from "react-router-dom"
 import { db } from "../config"
 import Spinner from "../assets/spinner"
-function Home({ fetchDataFromHome }) {
+import { Button } from "reactstrap"
+import { nameCapitalize } from "../nameSplitter"
+function Home({ fetchDataFromHome, updateDataFromAddBlog }) {
+    console.log("after deletion")
     const [files, setFiles] = useState([])
     useEffect(() => {
         const files = collection(db, "myfire")
-        const q = query(files, orderBy("createdAt", "asc"))
+        const q = query(files, orderBy("createdAt", "desc"))
         onSnapshot(q, (snapshot) => {
             const files = snapshot.docs.map(i => ({
                 id: i.id,
@@ -15,6 +18,7 @@ function Home({ fetchDataFromHome }) {
             }))
             setFiles(files)
             fetchDataFromHome(files)
+            updateDataFromAddBlog("")
         })
 
     }, [])
@@ -40,6 +44,13 @@ function Home({ fetchDataFromHome }) {
                                 <div>
                                     <p>{toDateTime(item.createdAt.seconds)}</p>
                                 </div>
+                                {
+                                    item.createdBy &&
+                                    <div>
+                                        <p>createdBy: {nameCapitalize(item.createdBy)}</p>
+                                    </div>
+                                }
+
                             </Link>
                         </div>
                     )
